@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -28,11 +28,11 @@ const vibes = [
 
 // Meme templates
 const templates = [
-  { id: "drake", name: "Drake", path: "/templates/drake.png" },
+  { id: "drake", name: "Drake", path: "/templates/drake.jpg" },
   { id: "doge", name: "Doge", path: "/templates/doge.png" },
-  { id: "distracted", name: "Distracted Boyfriend", path: "/templates/distracted.png" },
-  { id: "button", name: "Button Choice", path: "/templates/button.png" },
-  { id: "change", name: "Change My Mind", path: "/templates/change.png" },
+  { id: "distracted", name: "Distracted Boyfriend", path: "/templates/distracted.jpg" },
+  { id: "button", name: "Button Choice", path: "/templates/Buttons.jpg" },
+  { id: "change", name: "Change My Mind", path: "/templates/change.jpg" },
 ]
 
 // Random text options for "Feeling Lucky"
@@ -99,10 +99,15 @@ export default function Home() {
   const memeWidth = 400; // or whatever your meme image width is
   const memeHeight = 400; // or whatever your meme image height is
   const [topTextPosition, setTopTextPosition] = useState({ x: memeWidth / 4, y: 40 })
-  const [bottomTextPosition, setBottomTextPosition] = useState({ x: memeWidth / 4, y: memeHeight / 2 })
+  const [bottomTextPosition, setBottomTextPosition] = useState({ x: memeWidth / 4, y: memeHeight - 100 })
 
   const memeRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+
+  const [randomValue, setRandomValue] = useState<number | null>(null);
+  useEffect(() => {
+    setRandomValue(Math.random());
+  }, []);
 
   // Handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,9 +150,9 @@ export default function Home() {
     const randomVibe = vibes[Math.floor(Math.random() * vibes.length)]
     setSelectedVibe(randomVibe)
 
-    // Reset positions
+    // Reset positions: top text near top, bottom text near bottom
     setTopTextPosition({ x: memeWidth / 4, y: 40 })
-    setBottomTextPosition({ x: memeWidth / 4, y: memeHeight / 2 })
+    setBottomTextPosition({ x: memeWidth / 4, y: memeHeight - 100 })
 
     toast({
       title: "Feeling Lucky!",
@@ -252,25 +257,25 @@ export default function Home() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-5xl">
+    <main className="w-full max-w-5xl mx-auto min-h-screen flex flex-col">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2">MemeSnap</h1>
-        <p className="text-muted-foreground">Create vibe-coded memes in seconds ✨</p>
+        <h1 className="text-2xl sm:text-4xl font-bold mb-2">MemeSnap</h1>
+        <p className="text-muted-foreground text-sm sm:text-base">Create vibe-coded memes in seconds ✨</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 h-full">
         {/* Left column: Controls */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 h-full overflow-auto pb-4 lg:pb-0 pr-0 lg:pr-2">
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="pt-4 sm:pt-6">
               <Tabs defaultValue="templates">
-                <TabsList className="grid grid-cols-2 mb-4">
+                <TabsList className="grid grid-cols-2 mb-2 sm:mb-4">
                   <TabsTrigger value="templates">Templates</TabsTrigger>
                   <TabsTrigger value="upload">Upload</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="templates" className="space-y-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <TabsContent value="templates" className="space-y-2 sm:space-y-4">
+                  <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-3">
                     {templates.map((template) => (
                       <div
                         key={template.id}
@@ -286,7 +291,7 @@ export default function Home() {
                           alt={template.name}
                           width={150}
                           height={150}
-                          className="w-full h-auto object-cover aspect-square"
+                          className="w-full h-auto object-cover aspect-square min-h-[80px]"
                         />
                         <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 text-center">
                           {template.name}
@@ -296,13 +301,13 @@ export default function Home() {
                   </div>
 
                   {/* Feeling Lucky Button */}
-                  <Button onClick={feelingLucky} variant="outline" className="w-full mt-4 text-lg font-medium">
+                  <Button onClick={feelingLucky} variant="outline" className="w-full mt-2 sm:mt-4 text-base sm:text-lg font-medium">
                     <Dice5Icon className="mr-2 h-5 w-5" />🎲 Feeling Lucky
                   </Button>
                 </TabsContent>
 
-                <TabsContent value="upload" className="space-y-4">
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                <TabsContent value="upload" className="space-y-2 sm:space-y-4">
+                  <div className="border-2 border-dashed rounded-lg p-4 sm:p-6 text-center">
                     <Input
                       type="file"
                       accept="image/png,image/jpeg,image/jpg"
@@ -312,14 +317,14 @@ export default function Home() {
                     />
                     <Label htmlFor="image-upload" className="flex flex-col items-center justify-center cursor-pointer">
                       <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-                      <span className="text-lg font-medium">Upload your image</span>
-                      <span className="text-sm text-muted-foreground mt-1">PNG, JPG up to 5MB</span>
+                      <span className="text-base sm:text-lg font-medium">Upload your image</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground mt-1">PNG, JPG up to 5MB</span>
                     </Label>
                   </div>
 
                   {uploadedImage && (
                     <div className="mt-4 text-center">
-                      <p className="text-sm text-green-600 mb-2">Image uploaded successfully!</p>
+                      <p className="text-xs sm:text-sm text-green-600 mb-2">Image uploaded successfully!</p>
                       <Button variant="outline" size="sm" onClick={() => setUploadedImage(null)}>
                         Remove
                       </Button>
@@ -331,7 +336,7 @@ export default function Home() {
           </Card>
 
           <Card>
-            <CardContent className="pt-6 space-y-4">
+            <CardContent className="pt-4 sm:pt-6 space-y-2 sm:space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="top-text">Top Text</Label>
                 <Input
@@ -339,6 +344,7 @@ export default function Home() {
                   placeholder="Enter top text"
                   value={topText}
                   onChange={(e) => setTopText(e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
@@ -349,6 +355,7 @@ export default function Home() {
                   placeholder="Enter bottom text"
                   value={bottomText}
                   onChange={(e) => setBottomText(e.target.value)}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
@@ -375,8 +382,8 @@ export default function Home() {
 
           {/* Text Style Customization Card */}
           <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h3 className="text-lg font-medium">Text Style</h3>
+            <CardContent className="pt-4 sm:pt-6 space-y-2 sm:space-y-4">
+              <h3 className="text-base sm:text-lg font-medium">Text Style</h3>
 
               <div className="space-y-2">
                 <Label htmlFor="font-family">Font</Label>
@@ -405,7 +412,7 @@ export default function Home() {
                   step={1}
                   value={[fontSize]}
                   onValueChange={(value) => setFontSize(value[0])}
-                  className="py-4"
+                  className="py-2 sm:py-4"
                 />
               </div>
 
@@ -445,7 +452,7 @@ export default function Home() {
                 <Label htmlFor="text-shadow">Text Shadow/Outline</Label>
               </div>
 
-              <div className="text-sm text-muted-foreground mt-2">
+              <div className="text-xs sm:text-sm text-muted-foreground mt-2">
                 <p>Tip: Drag text on the preview to reposition it!</p>
               </div>
             </CardContent>
@@ -453,24 +460,24 @@ export default function Home() {
         </div>
 
         {/* Right column: Preview and Export */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 h-full overflow-auto pb-4 lg:pb-0 pl-0 lg:pl-2">
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="pt-4 sm:pt-6">
               <div className="text-center mb-4">
-                <h2 className="text-xl font-semibold">Meme Preview</h2>
+                <h2 className="text-lg sm:text-xl font-semibold">Meme Preview</h2>
               </div>
 
               <div
                 ref={memeRef}
-                className={`relative mx-auto max-w-md border-8 ${selectedVibe.color} rounded-lg overflow-hidden bg-black`}
+                className={`relative mx-auto w-full max-w-xs sm:max-w-md border-4 sm:border-8 ${selectedVibe.color} rounded-lg overflow-hidden bg-black`}
               >
                 {(uploadedImage || selectedTemplate) && (
-                  <div className="relative aspect-square">
+                  <div className="relative aspect-square w-full h-full min-h-[250px]">
                     <Image
                       src={uploadedImage || selectedTemplate.path}
                       alt="Meme template"
                       fill
-                      className="object-cover"
+                      className="object-cover w-full h-full"
                     />
 
                     {topText && (
@@ -499,24 +506,24 @@ export default function Home() {
           </Card>
 
           <Card>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-2 gap-4">
-                <Button onClick={exportMeme} className="flex items-center justify-center gap-2">
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                <Button onClick={exportMeme} className="flex items-center justify-center gap-2 w-full">
                   <Download className="h-4 w-4" />
                   Download
                 </Button>
 
-                <Button onClick={copyMeme} variant="outline" className="flex items-center justify-center gap-2">
+                <Button onClick={copyMeme} variant="outline" className="flex items-center justify-center gap-2 w-full">
                   <Copy className="h-4 w-4" />
                   Copy
                 </Button>
 
-                <Button onClick={shareOnTwitter} variant="outline" className="flex items-center justify-center gap-2">
+                <Button onClick={shareOnTwitter} variant="outline" className="flex items-center justify-center gap-2 w-full">
                   <Share2 className="h-4 w-4" />
                   Share on Twitter
                 </Button>
 
-                <Button onClick={exportMeme} variant="secondary" className="flex items-center justify-center gap-2">
+                <Button onClick={exportMeme} variant="secondary" className="flex items-center justify-center gap-2 w-full">
                   <Download className="h-4 w-4" />
                   Save as PNG
                 </Button>

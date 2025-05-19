@@ -22,7 +22,7 @@ export default function CustomDraggableText({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const textRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
-
+  
   // Only enable dragging on client side
   useEffect(() => {
     setMounted(true)
